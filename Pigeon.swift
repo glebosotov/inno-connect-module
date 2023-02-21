@@ -47,14 +47,14 @@ struct QuizConfiguration {
   var seedColor: String? = nil
 
   static func fromList(_ list: [Any?]) -> QuizConfiguration? {
-    let startImageUrl = list[0] as? String 
-    let endImageUrl = list[1] as? String 
-    let startTitle = list[2] as? String 
-    let startDescription = list[3] as? String 
-    let endTitle = list[4] as? String 
-    let endDescription = list[5] as? String 
+    let startImageUrl = list[0] as? String
+    let endImageUrl = list[1] as? String
+    let startTitle = list[2] as? String
+    let startDescription = list[3] as? String
+    let endTitle = list[4] as? String
+    let endDescription = list[5] as? String
     let nextButtonTitle = list[6] as! String
-    let seedColor = list[7] as? String 
+    let seedColor = list[7] as? String
 
     return QuizConfiguration(
       startImageUrl: startImageUrl,
@@ -93,9 +93,9 @@ struct QuestionModel {
   static func fromList(_ list: [Any?]) -> QuestionModel? {
     let id = list[0] as! String
     let type = list[1] as! String
-    let image = list[2] as? String 
+    let image = list[2] as? String
     let title = list[3] as! String
-    let description = list[4] as? String 
+    let description = list[4] as? String
     let options = list[5] as! [Option?]
 
     return QuestionModel(
@@ -149,8 +149,8 @@ struct AnswerModel {
 
   static func fromList(_ list: [Any?]) -> AnswerModel? {
     let questionId = list[0] as! String
-    let optionId = list[1] as? String 
-    let text = list[2] as? String 
+    let optionId = list[1] as? String
+    let text = list[2] as? String
 
     return AnswerModel(
       questionId: questionId,

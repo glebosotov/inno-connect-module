@@ -194,6 +194,7 @@ class MetaLayout extends StatelessWidget {
       children: <Widget>[
         const Spacer(flex: 2),
         Expanded(
+          flex: 2,
           child: Text(
             title ?? '',
             style: Theme.of(context).textTheme.headlineMedium,
