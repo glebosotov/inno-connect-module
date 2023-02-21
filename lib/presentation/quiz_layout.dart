@@ -205,9 +205,12 @@ class MetaLayout extends StatelessWidget {
         ),
         Expanded(
           flex: 2,
-          child: Text(
-            description ?? '',
-            style: Theme.of(context).textTheme.bodyMedium,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              description ?? '',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
           ),
         ),
         const SizedBox(
