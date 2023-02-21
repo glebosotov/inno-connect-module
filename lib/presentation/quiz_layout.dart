@@ -192,7 +192,7 @@ class MetaLayout extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        const Spacer(flex: 2),
+        const Spacer(),
         Expanded(
           flex: 2,
           child: Text(
@@ -225,7 +225,7 @@ class MetaLayout extends StatelessWidget {
               ],
             ),
           ),
-        const Spacer(flex: 2),
+        const Spacer(),
       ],
     );
   }
