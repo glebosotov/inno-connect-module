@@ -192,8 +192,8 @@ class MetaLayout extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        const Spacer(),
-        Expanded(
+        // const Spacer(),
+        Flexible(
           flex: 2,
           child: Text(
             title ?? '',
@@ -203,22 +203,19 @@ class MetaLayout extends StatelessWidget {
         const SizedBox(
           height: 8,
         ),
-        Expanded(
+        Flexible(
           flex: 2,
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              description ?? '',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+          child: Text(
+            description ?? '',
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
         ),
         const SizedBox(
           height: 32,
         ),
         if (imageUrl != null)
-          Expanded(
-            flex: 6,
+          Flexible(
+            flex: 4,
             child: Column(
               children: <Widget>[
                 ClipRRect(
@@ -228,7 +225,7 @@ class MetaLayout extends StatelessWidget {
               ],
             ),
           ),
-        const Spacer(),
+        // const Spacer(),
       ],
     );
   }
