@@ -12,9 +12,8 @@ enum QuestionType {
   singleChoice,
 }
 
-class QuizModel {
-  QuizModel({
-    required this.questions,
+class QuizConfiguration {
+  QuizConfiguration({
     this.startImageUrl,
     this.endImageUrl,
     this.startTitle,
@@ -24,8 +23,6 @@ class QuizModel {
     required this.nextButtonTitle,
     this.seedColor,
   });
-
-  List<QuestionModel?> questions;
 
   String? startImageUrl;
 
@@ -45,7 +42,6 @@ class QuizModel {
 
   Object encode() {
     return <Object?>[
-      questions,
       startImageUrl,
       endImageUrl,
       startTitle,
@@ -57,18 +53,17 @@ class QuizModel {
     ];
   }
 
-  static QuizModel decode(Object result) {
+  static QuizConfiguration decode(Object result) {
     result as List<Object?>;
-    return QuizModel(
-      questions: (result[0] as List<Object?>?)!.cast<QuestionModel?>(),
-      startImageUrl: result[1] as String?,
-      endImageUrl: result[2] as String?,
-      startTitle: result[3] as String?,
-      startDescription: result[4] as String?,
-      endTitle: result[5] as String?,
-      endDescription: result[6] as String?,
-      nextButtonTitle: result[7]! as String,
-      seedColor: result[8] as String?,
+    return QuizConfiguration(
+      startImageUrl: result[0] as String?,
+      endImageUrl: result[1] as String?,
+      startTitle: result[2] as String?,
+      startDescription: result[3] as String?,
+      endTitle: result[4] as String?,
+      endDescription: result[5] as String?,
+      nextButtonTitle: result[6]! as String,
+      seedColor: result[7] as String?,
     );
   }
 }
@@ -85,7 +80,7 @@ class QuestionModel {
 
   String id;
 
-  QuestionType type;
+  String type;
 
   String? image;
 
@@ -98,7 +93,7 @@ class QuestionModel {
   Object encode() {
     return <Object?>[
       id,
-      type.index,
+      type,
       image,
       title,
       description,
@@ -110,7 +105,7 @@ class QuestionModel {
     result as List<Object?>;
     return QuestionModel(
       id: result[0]! as String,
-      type: QuestionType.values[result[1]! as int],
+      type: result[1]! as String,
       image: result[2] as String?,
       title: result[3]! as String,
       description: result[4] as String?,
@@ -189,7 +184,7 @@ class _QuizApiCodec extends StandardMessageCodec {
     } else if (value is QuestionModel) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    } else if (value is QuizModel) {
+    } else if (value is QuizConfiguration) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
     } else {
@@ -207,7 +202,7 @@ class _QuizApiCodec extends StandardMessageCodec {
       case 130: 
         return QuestionModel.decode(readValue(buffer)!);
       case 131: 
-        return QuizModel.decode(readValue(buffer)!);
+        return QuizConfiguration.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
     }
@@ -224,9 +219,9 @@ class QuizApi {
 
   static const MessageCodec<Object?> codec = _QuizApiCodec();
 
-  Future<QuizModel> getQuiz() async {
+  Future<QuizConfiguration> getQuizConfig() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.QuizApi.getQuiz', codec,
+        'dev.flutter.pigeon.QuizApi.getQuizConfig', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -247,7 +242,34 @@ class QuizApi {
         message: 'Host platform returned null value for non-null return value.',
       );
     } else {
-      return (replyList[0] as QuizModel?)!;
+      return (replyList[0] as QuizConfiguration?)!;
+    }
+  }
+
+  Future<List<QuestionModel?>> getQuestions() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.QuizApi.getQuestions', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(null) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else if (replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyList[0] as List<Object?>?)!.cast<QuestionModel?>();
     }
   }
 
@@ -257,6 +279,28 @@ class QuizApi {
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_answers]) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> quizStarted() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.QuizApi.quizStarted', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(null) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',

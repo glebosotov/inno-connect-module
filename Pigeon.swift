@@ -36,8 +36,7 @@ enum QuestionType: Int {
 }
 
 /// Generated class from Pigeon that represents data sent in messages.
-struct QuizModel {
-  var questions: [QuestionModel?]
+struct QuizConfiguration {
   var startImageUrl: String? = nil
   var endImageUrl: String? = nil
   var startTitle: String? = nil
@@ -47,19 +46,17 @@ struct QuizModel {
   var nextButtonTitle: String
   var seedColor: String? = nil
 
-  static func fromList(_ list: [Any?]) -> QuizModel? {
-    let questions = list[0] as! [QuestionModel?]
-    let startImageUrl = list[1] as? String
-    let endImageUrl = list[2] as? String
-    let startTitle = list[3] as? String
-    let startDescription = list[4] as? String
-    let endTitle = list[5] as? String
-    let endDescription = list[6] as? String
-    let nextButtonTitle = list[7] as! String
-    let seedColor = list[8] as? String
+  static func fromList(_ list: [Any?]) -> QuizConfiguration? {
+    let startImageUrl = list[0] as? String 
+    let endImageUrl = list[1] as? String 
+    let startTitle = list[2] as? String 
+    let startDescription = list[3] as? String 
+    let endTitle = list[4] as? String 
+    let endDescription = list[5] as? String 
+    let nextButtonTitle = list[6] as! String
+    let seedColor = list[7] as? String 
 
-    return QuizModel(
-      questions: questions,
+    return QuizConfiguration(
       startImageUrl: startImageUrl,
       endImageUrl: endImageUrl,
       startTitle: startTitle,
@@ -72,7 +69,6 @@ struct QuizModel {
   }
   func toList() -> [Any?] {
     return [
-      questions,
       startImageUrl,
       endImageUrl,
       startTitle,
@@ -88,7 +84,7 @@ struct QuizModel {
 /// Generated class from Pigeon that represents data sent in messages.
 struct QuestionModel {
   var id: String
-  var type: QuestionType
+  var type: String
   var image: String? = nil
   var title: String
   var description: String? = nil
@@ -96,10 +92,10 @@ struct QuestionModel {
 
   static func fromList(_ list: [Any?]) -> QuestionModel? {
     let id = list[0] as! String
-    let type = QuestionType(rawValue: list[1] as! Int)!
-    let image = list[2] as? String
+    let type = list[1] as! String
+    let image = list[2] as? String 
     let title = list[3] as! String
-    let description = list[4] as? String
+    let description = list[4] as? String 
     let options = list[5] as! [Option?]
 
     return QuestionModel(
@@ -114,7 +110,7 @@ struct QuestionModel {
   func toList() -> [Any?] {
     return [
       id,
-      type.rawValue,
+      type,
       image,
       title,
       description,
@@ -153,8 +149,8 @@ struct AnswerModel {
 
   static func fromList(_ list: [Any?]) -> AnswerModel? {
     let questionId = list[0] as! String
-    let optionId = list[1] as? String
-    let text = list[2] as? String
+    let optionId = list[1] as? String 
+    let text = list[2] as? String 
 
     return AnswerModel(
       questionId: questionId,
@@ -180,7 +176,7 @@ private class QuizApiCodecReader: FlutterStandardReader {
       case 130:
         return QuestionModel.fromList(self.readValue() as! [Any])
       case 131:
-        return QuizModel.fromList(self.readValue() as! [Any])
+        return QuizConfiguration.fromList(self.readValue() as! [Any])
       default:
         return super.readValue(ofType: type)
     }
@@ -198,7 +194,7 @@ private class QuizApiCodecWriter: FlutterStandardWriter {
     } else if let value = value as? QuestionModel {
       super.writeByte(130)
       super.writeValue(value.toList())
-    } else if let value = value as? QuizModel {
+    } else if let value = value as? QuizConfiguration {
       super.writeByte(131)
       super.writeValue(value.toList())
     } else {
@@ -223,8 +219,10 @@ class QuizApiCodec: FlutterStandardMessageCodec {
 
 /// Generated protocol from Pigeon that represents a handler of messages from Flutter.
 protocol QuizApi {
-  func getQuiz() throws -> QuizModel
+  func getQuizConfig() throws -> QuizConfiguration
+  func getQuestions() throws -> [QuestionModel]
   func sendAnswers(answers: [AnswerModel]) throws
+  func quizStarted() throws
 }
 
 /// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
@@ -233,18 +231,31 @@ class QuizApiSetup {
   static var codec: FlutterStandardMessageCodec { QuizApiCodec.shared }
   /// Sets up an instance of `QuizApi` to handle messages through the `binaryMessenger`.
   static func setUp(binaryMessenger: FlutterBinaryMessenger, api: QuizApi?) {
-    let getQuizChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.QuizApi.getQuiz", binaryMessenger: binaryMessenger, codec: codec)
+    let getQuizConfigChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.QuizApi.getQuizConfig", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
-      getQuizChannel.setMessageHandler { _, reply in
+      getQuizConfigChannel.setMessageHandler { _, reply in
         do {
-          let result = try api.getQuiz()
+          let result = try api.getQuizConfig()
           reply(wrapResult(result))
         } catch {
           reply(wrapError(error))
         }
       }
     } else {
-      getQuizChannel.setMessageHandler(nil)
+      getQuizConfigChannel.setMessageHandler(nil)
+    }
+    let getQuestionsChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.QuizApi.getQuestions", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      getQuestionsChannel.setMessageHandler { _, reply in
+        do {
+          let result = try api.getQuestions()
+          reply(wrapResult(result))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      getQuestionsChannel.setMessageHandler(nil)
     }
     let sendAnswersChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.QuizApi.sendAnswers", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
@@ -260,6 +271,19 @@ class QuizApiSetup {
       }
     } else {
       sendAnswersChannel.setMessageHandler(nil)
+    }
+    let quizStartedChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.QuizApi.quizStarted", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      quizStartedChannel.setMessageHandler { _, reply in
+        do {
+          try api.quizStarted()
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      quizStartedChannel.setMessageHandler(nil)
     }
   }
 }

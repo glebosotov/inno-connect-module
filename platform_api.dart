@@ -1,8 +1,7 @@
 import 'package:pigeon/pigeon.dart';
 
-class QuizModel {
-  QuizModel(
-    this.questions,
+class QuizConfiguration {
+  QuizConfiguration(
     this.startImageUrl,
     this.endImageUrl,
     this.startTitle,
@@ -12,7 +11,6 @@ class QuizModel {
     this.nextButtonTitle,
     this.seedColor,
   );
-  final List<QuestionModel?> questions;
   final String? startImageUrl;
   final String? endImageUrl;
   final String? startTitle;
@@ -33,7 +31,7 @@ class QuestionModel {
     required this.options,
   });
   final String id;
-  final QuestionType type;
+  final String type;
   final String? image;
   final String title;
   final String? description;
@@ -66,7 +64,11 @@ class AnswerModel {
 
 @HostApi()
 abstract class QuizApi {
-  QuizModel getQuiz();
+  QuizConfiguration getQuizConfig();
+
+  List<QuestionModel> getQuestions();
 
   void sendAnswers(List<AnswerModel> answers);
+
+  void quizStarted();
 }

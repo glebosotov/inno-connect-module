@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../main.dart';
 import '../pigeon.dart';
 import 'answer_button.dart';
 
 class QuizLayout extends StatefulWidget {
   const QuizLayout({
     super.key,
-    required this.quiz,
+    required this.questions,
     required this.onDone,
-    required this.quizModel,
+    required this.config,
   });
-  final List<QuestionModel> quiz;
-  final QuizModel quizModel;
+  final List<QuestionModel> questions;
+  final QuizConfiguration config;
   final Function(List<AnswerModel>) onDone;
 
   @override
@@ -22,6 +23,13 @@ class QuizLayout extends StatefulWidget {
 class _QuizLayoutState extends State<QuizLayout> {
   final PageController _pageController = PageController();
   List<AnswerModel> _answers = <AnswerModel>[];
+
+  @override
+  void initState() {
+    api.quizStarted();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +44,7 @@ class _QuizLayoutState extends State<QuizLayout> {
               ),
               SmoothPageIndicator(
                 controller: _pageController,
-                count: widget.quiz.length + 2,
+                count: widget.questions.length + 2,
                 effect: WormEffect(
                   dotWidth: 8,
                   dotHeight: 8,
@@ -52,26 +60,26 @@ class _QuizLayoutState extends State<QuizLayout> {
                 child: PageView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   controller: _pageController,
-                  itemCount: widget.quiz.length + 2,
+                  itemCount: widget.questions.length + 2,
                   itemBuilder: (BuildContext context, int index) {
                     if (index == 0) {
                       return MetaLayout(
-                        title: widget.quizModel.startTitle,
-                        description: widget.quizModel.startDescription,
-                        imageUrl: widget.quizModel.startImageUrl,
+                        title: widget.config.startTitle,
+                        description: widget.config.startDescription,
+                        imageUrl: widget.config.startImageUrl,
                       );
-                    } else if (index == widget.quiz.length + 1) {
+                    } else if (index == widget.questions.length + 1) {
                       return MetaLayout(
-                        title: widget.quizModel.endTitle,
-                        description: widget.quizModel.endDescription,
-                        imageUrl: widget.quizModel.endImageUrl,
+                        title: widget.config.endTitle,
+                        description: widget.config.endDescription,
+                        imageUrl: widget.config.endImageUrl,
                       );
                     } else {
                       return Column(
                         children: <Widget>[
                           Expanded(
                             child: Text(
-                              widget.quiz[index - 1].title,
+                              widget.questions[index - 1].title,
                               style: Theme.of(context).textTheme.headlineMedium,
                               textAlign: TextAlign.center,
                             ),
@@ -79,11 +87,11 @@ class _QuizLayoutState extends State<QuizLayout> {
                           const SizedBox(
                             height: 8,
                           ),
-                          if (widget.quiz[index - 1].description !=
+                          if (widget.questions[index - 1].description !=
                               null) ...<Widget>[
                             Expanded(
                               child: Text(
-                                widget.quiz[index - 1].description!,
+                                widget.questions[index - 1].description!,
                                 style: Theme.of(context).textTheme.bodyMedium,
                               ),
                             ),
@@ -94,8 +102,8 @@ class _QuizLayoutState extends State<QuizLayout> {
                           Expanded(
                             flex: 5,
                             child: _AnswersList(
-                              questionId: widget.quiz[index - 1].id,
-                              options: widget.quiz[index - 1].options
+                              questionId: widget.questions[index - 1].id,
+                              options: widget.questions[index - 1].options
                                   .where((Option? element) => element != null)
                                   .cast<Option>()
                                   .toList(),
@@ -130,10 +138,10 @@ class _QuizLayoutState extends State<QuizLayout> {
                               }
                             : _pageController.hasClients &&
                                     _pageController.page ==
-                                        widget.quiz.length + 1
+                                        widget.questions.length + 1
                                 ? () => widget.onDone(_answers)
                                 : null,
-                        child: Text(widget.quizModel.nextButtonTitle),
+                        child: Text(widget.config.nextButtonTitle),
                       ),
                     ),
                   ],
@@ -157,11 +165,11 @@ class _QuizLayoutState extends State<QuizLayout> {
     if (page == null) {
       return false;
     }
-    if (page == widget.quiz.length + 1) {
+    if (page == widget.questions.length + 1) {
       return false;
     }
 
-    final QuestionModel questionIndex = widget.quiz[page.toInt() - 1];
+    final QuestionModel questionIndex = widget.questions[page.toInt() - 1];
 
     return _answers
         .any((AnswerModel element) => element.questionId == questionIndex.id);
@@ -257,9 +265,12 @@ class _AnswersListState extends State<_AnswersList> {
           });
           widget.onChanged(_answers);
         },
-        isChosen: _answers.any(
-          (AnswerModel element) => element.optionId == widget.options[index].id,
-        ),
+        isChosen: _answers
+            .where((AnswerModel e) => e.questionId == widget.questionId)
+            .any(
+              (AnswerModel element) =>
+                  element.optionId == widget.options[index].id,
+            ),
       ),
       separatorBuilder: (_, __) => const SizedBox(
         height: 8,
