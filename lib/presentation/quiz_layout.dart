@@ -77,23 +77,19 @@ class _QuizLayoutState extends State<QuizLayout> {
                     } else {
                       return Column(
                         children: <Widget>[
-                          Expanded(
-                            child: Text(
-                              widget.questions[index - 1].title,
-                              style: Theme.of(context).textTheme.headlineMedium,
-                              textAlign: TextAlign.center,
-                            ),
+                          Text(
+                            widget.questions[index - 1].title,
+                            style: Theme.of(context).textTheme.headlineMedium,
+                            textAlign: TextAlign.center,
                           ),
                           const SizedBox(
                             height: 8,
                           ),
                           if (widget.questions[index - 1].description !=
                               null) ...<Widget>[
-                            Expanded(
-                              child: Text(
-                                widget.questions[index - 1].description!,
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
+                            Text(
+                              widget.questions[index - 1].description!,
+                              style: Theme.of(context).textTheme.bodyMedium,
                             ),
                             const SizedBox(
                               height: 16,
@@ -193,36 +189,29 @@ class MetaLayout extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         // const Spacer(),
-        Flexible(
-          flex: 2,
-          child: Text(
-            title ?? '',
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
+        Text(
+          title ?? '',
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(
           height: 8,
         ),
-        Flexible(
-          flex: 2,
-          child: Text(
-            description ?? '',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
+        Text(
+          description ?? '',
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(
           height: 32,
         ),
         if (imageUrl != null)
-          Flexible(
-            flex: 4,
-            child: Column(
-              children: <Widget>[
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.network(imageUrl ?? ''),
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage(imageUrl ?? ''),
+                  fit: BoxFit.contain,
                 ),
-              ],
+              ),
             ),
           ),
         // const Spacer(),
