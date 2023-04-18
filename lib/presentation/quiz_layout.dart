@@ -4,6 +4,8 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../main.dart';
 import '../pigeon.dart';
 import 'answer_button.dart';
+import 'button_style.dart';
+import 'open_answer_field.dart';
 
 class QuizLayout extends StatefulWidget {
   const QuizLayout({
@@ -121,6 +123,7 @@ class _QuizLayoutState extends State<QuizLayout> {
                   children: <Widget>[
                     Expanded(
                       child: ElevatedButton(
+                        style: answerButtonStyle(context),
                         onPressed: (_pageController.hasClients &&
                                     _pageController.page == 0) ||
                                 _checkButtonState()
@@ -191,14 +194,20 @@ class MetaLayout extends StatelessWidget {
         // const Spacer(),
         Text(
           title ?? '',
-          style: Theme.of(context).textTheme.headlineMedium,
+          style: Theme.of(context)
+              .textTheme
+              .headlineMedium
+              ?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(
           height: 8,
         ),
         Text(
           description ?? '',
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color:
+                    Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+              ),
         ),
         const SizedBox(
           height: 32,
@@ -242,26 +251,49 @@ class _AnswersListState extends State<_AnswersList> {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      itemBuilder: (BuildContext context, int index) => AnswerButton(
-        option: widget.options[index],
-        onTap: () {
-          setState(() {
-            _answers.removeWhere((AnswerModel element) =>
-                element.questionId == widget.questionId);
-            _answers.add(AnswerModel(
-              questionId: widget.questionId,
-              optionId: widget.options[index].id,
-            ));
-          });
-          widget.onChanged(_answers);
-        },
-        isChosen: _answers
-            .where((AnswerModel e) => e.questionId == widget.questionId)
-            .any(
-              (AnswerModel element) =>
-                  element.optionId == widget.options[index].id,
+      itemBuilder: (BuildContext context, int index) => widget
+              .options[index].isOpen
+          ? OpenAnswerField(
+              isChosen: _answers
+                  .where((AnswerModel e) => e.questionId == widget.questionId)
+                  .any(
+                    (AnswerModel element) =>
+                        element.optionId == widget.options[index].id,
+                  ),
+              onChanged: (String answer) {
+                setState(() {
+                  _answers.removeWhere((AnswerModel element) =>
+                      element.questionId == widget.questionId);
+                  _answers.add(AnswerModel(
+                    questionId: widget.questionId,
+                    optionId: widget.options[index].id,
+                    text: answer,
+                  ));
+                  widget.onChanged(_answers);
+                });
+              },
+            )
+          : AnswerButton(
+              option: widget.options[index],
+              onTap: () {
+                FocusScope.of(context).unfocus();
+                setState(() {
+                  _answers.removeWhere((AnswerModel element) =>
+                      element.questionId == widget.questionId);
+                  _answers.add(AnswerModel(
+                    questionId: widget.questionId,
+                    optionId: widget.options[index].id,
+                  ));
+                });
+                widget.onChanged(_answers);
+              },
+              isChosen: _answers
+                  .where((AnswerModel e) => e.questionId == widget.questionId)
+                  .any(
+                    (AnswerModel element) =>
+                        element.optionId == widget.options[index].id,
+                  ),
             ),
-      ),
       separatorBuilder: (_, __) => const SizedBox(
         height: 8,
       ),

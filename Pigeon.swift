@@ -33,6 +33,8 @@ private func wrapError(_ error: Any) -> [Any?] {
 
 enum QuestionType: Int {
   case singleChoice = 0
+  case singleChoiceOpen = 1
+  case open = 2
 }
 
 /// Generated class from Pigeon that represents data sent in messages.
@@ -47,14 +49,14 @@ struct QuizConfiguration {
   var seedColor: String? = nil
 
   static func fromList(_ list: [Any?]) -> QuizConfiguration? {
-    let startImageUrl = list[0] as? String
-    let endImageUrl = list[1] as? String
-    let startTitle = list[2] as? String
-    let startDescription = list[3] as? String
-    let endTitle = list[4] as? String
-    let endDescription = list[5] as? String
+    let startImageUrl = list[0] as? String 
+    let endImageUrl = list[1] as? String 
+    let startTitle = list[2] as? String 
+    let startDescription = list[3] as? String 
+    let endTitle = list[4] as? String 
+    let endDescription = list[5] as? String 
     let nextButtonTitle = list[6] as! String
-    let seedColor = list[7] as? String
+    let seedColor = list[7] as? String 
 
     return QuizConfiguration(
       startImageUrl: startImageUrl,
@@ -82,9 +84,91 @@ struct QuizConfiguration {
 }
 
 /// Generated class from Pigeon that represents data sent in messages.
+struct HubScreenConfiguration {
+  var news: [NewsItem?]
+  var buttons: [HubButton?]
+
+  static func fromList(_ list: [Any?]) -> HubScreenConfiguration? {
+    let news = list[0] as! [NewsItem?]
+    let buttons = list[1] as! [HubButton?]
+
+    return HubScreenConfiguration(
+      news: news,
+      buttons: buttons
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      news,
+      buttons,
+    ]
+  }
+}
+
+/// Generated class from Pigeon that represents data sent in messages.
+struct HubButton {
+  var title: String
+  var id: String
+  var startsQuiz: Bool
+
+  static func fromList(_ list: [Any?]) -> HubButton? {
+    let title = list[0] as! String
+    let id = list[1] as! String
+    let startsQuiz = list[2] as! Bool
+
+    return HubButton(
+      title: title,
+      id: id,
+      startsQuiz: startsQuiz
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      title,
+      id,
+      startsQuiz,
+    ]
+  }
+}
+
+/// Generated class from Pigeon that represents data sent in messages.
+struct NewsItem {
+  var id: String
+  var title: String
+  var description: String? = nil
+  var imageUrl: String? = nil
+  var dateSecondsFromEpoch: Int32? = nil
+
+  static func fromList(_ list: [Any?]) -> NewsItem? {
+    let id = list[0] as! String
+    let title = list[1] as! String
+    let description = list[2] as? String 
+    let imageUrl = list[3] as? String 
+    let dateSecondsFromEpoch = list[4] as? Int32 
+
+    return NewsItem(
+      id: id,
+      title: title,
+      description: description,
+      imageUrl: imageUrl,
+      dateSecondsFromEpoch: dateSecondsFromEpoch
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      id,
+      title,
+      description,
+      imageUrl,
+      dateSecondsFromEpoch,
+    ]
+  }
+}
+
+/// Generated class from Pigeon that represents data sent in messages.
 struct QuestionModel {
   var id: String
-  var type: String
+  var type: QuestionType
   var image: String? = nil
   var title: String
   var description: String? = nil
@@ -92,10 +176,10 @@ struct QuestionModel {
 
   static func fromList(_ list: [Any?]) -> QuestionModel? {
     let id = list[0] as! String
-    let type = list[1] as! String
-    let image = list[2] as? String
+    let type = QuestionType(rawValue: list[1] as! Int)!
+    let image = list[2] as? String 
     let title = list[3] as! String
-    let description = list[4] as? String
+    let description = list[4] as? String 
     let options = list[5] as! [Option?]
 
     return QuestionModel(
@@ -110,7 +194,7 @@ struct QuestionModel {
   func toList() -> [Any?] {
     return [
       id,
-      type,
+      type.rawValue,
       image,
       title,
       description,
@@ -121,20 +205,24 @@ struct QuestionModel {
 
 /// Generated class from Pigeon that represents data sent in messages.
 struct Option {
+  var isOpen: Bool
   var id: String
   var text: String
 
   static func fromList(_ list: [Any?]) -> Option? {
-    let id = list[0] as! String
-    let text = list[1] as! String
+    let isOpen = list[0] as! Bool
+    let id = list[1] as! String
+    let text = list[2] as! String
 
     return Option(
+      isOpen: isOpen,
       id: id,
       text: text
     )
   }
   func toList() -> [Any?] {
     return [
+      isOpen,
       id,
       text,
     ]
@@ -149,8 +237,8 @@ struct AnswerModel {
 
   static func fromList(_ list: [Any?]) -> AnswerModel? {
     let questionId = list[0] as! String
-    let optionId = list[1] as? String
-    let text = list[2] as? String
+    let optionId = list[1] as? String 
+    let text = list[2] as? String 
 
     return AnswerModel(
       questionId: questionId,
@@ -172,10 +260,16 @@ private class QuizApiCodecReader: FlutterStandardReader {
       case 128:
         return AnswerModel.fromList(self.readValue() as! [Any])
       case 129:
-        return Option.fromList(self.readValue() as! [Any])
+        return HubButton.fromList(self.readValue() as! [Any])
       case 130:
-        return QuestionModel.fromList(self.readValue() as! [Any])
+        return HubScreenConfiguration.fromList(self.readValue() as! [Any])
       case 131:
+        return NewsItem.fromList(self.readValue() as! [Any])
+      case 132:
+        return Option.fromList(self.readValue() as! [Any])
+      case 133:
+        return QuestionModel.fromList(self.readValue() as! [Any])
+      case 134:
         return QuizConfiguration.fromList(self.readValue() as! [Any])
       default:
         return super.readValue(ofType: type)
@@ -188,14 +282,23 @@ private class QuizApiCodecWriter: FlutterStandardWriter {
     if let value = value as? AnswerModel {
       super.writeByte(128)
       super.writeValue(value.toList())
-    } else if let value = value as? Option {
+    } else if let value = value as? HubButton {
       super.writeByte(129)
       super.writeValue(value.toList())
-    } else if let value = value as? QuestionModel {
+    } else if let value = value as? HubScreenConfiguration {
       super.writeByte(130)
       super.writeValue(value.toList())
-    } else if let value = value as? QuizConfiguration {
+    } else if let value = value as? NewsItem {
       super.writeByte(131)
+      super.writeValue(value.toList())
+    } else if let value = value as? Option {
+      super.writeByte(132)
+      super.writeValue(value.toList())
+    } else if let value = value as? QuestionModel {
+      super.writeByte(133)
+      super.writeValue(value.toList())
+    } else if let value = value as? QuizConfiguration {
+      super.writeByte(134)
       super.writeValue(value.toList())
     } else {
       super.writeValue(value)
@@ -221,8 +324,11 @@ class QuizApiCodec: FlutterStandardMessageCodec {
 protocol QuizApi {
   func getQuizConfig() throws -> QuizConfiguration
   func getQuestions() throws -> [QuestionModel]
+  func getHubScreenConfig() throws -> HubScreenConfiguration
   func sendAnswers(answers: [AnswerModel]) throws
   func quizStarted() throws
+  func hubButtonPressed(id: String) throws
+  func newsItemPressed(id: String) throws
 }
 
 /// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
@@ -257,6 +363,19 @@ class QuizApiSetup {
     } else {
       getQuestionsChannel.setMessageHandler(nil)
     }
+    let getHubScreenConfigChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.QuizApi.getHubScreenConfig", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      getHubScreenConfigChannel.setMessageHandler { _, reply in
+        do {
+          let result = try api.getHubScreenConfig()
+          reply(wrapResult(result))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      getHubScreenConfigChannel.setMessageHandler(nil)
+    }
     let sendAnswersChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.QuizApi.sendAnswers", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       sendAnswersChannel.setMessageHandler { message, reply in
@@ -284,6 +403,36 @@ class QuizApiSetup {
       }
     } else {
       quizStartedChannel.setMessageHandler(nil)
+    }
+    let hubButtonPressedChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.QuizApi.hubButtonPressed", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      hubButtonPressedChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let idArg = args[0] as! String
+        do {
+          try api.hubButtonPressed(id: idArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      hubButtonPressedChannel.setMessageHandler(nil)
+    }
+    let newsItemPressedChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.QuizApi.newsItemPressed", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      newsItemPressedChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let idArg = args[0] as! String
+        do {
+          try api.newsItemPressed(id: idArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      newsItemPressedChannel.setMessageHandler(nil)
     }
   }
 }

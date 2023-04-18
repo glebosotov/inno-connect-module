@@ -21,6 +21,41 @@ class QuizConfiguration {
   final String? seedColor;
 }
 
+class HubScreenConfiguration {
+  HubScreenConfiguration({
+    required this.news,
+    required this.buttons,
+  });
+  final List<NewsItem?> news;
+  final List<HubButton?> buttons;
+}
+
+class HubButton {
+  HubButton({
+    required this.title,
+    required this.id,
+    this.startsQuiz = false,
+  });
+  final String title;
+  final String id;
+  final bool startsQuiz;
+}
+
+class NewsItem {
+  NewsItem({
+    required this.id,
+    required this.title,
+    this.description,
+    this.imageUrl,
+    this.dateSecondsFromEpoch,
+  });
+  final String id;
+  final String title;
+  final String? description;
+  final String? imageUrl;
+  final int? dateSecondsFromEpoch;
+}
+
 class QuestionModel {
   QuestionModel({
     required this.id,
@@ -31,7 +66,7 @@ class QuestionModel {
     required this.options,
   });
   final String id;
-  final String type;
+  final QuestionType type;
   final String? image;
   final String title;
   final String? description;
@@ -39,16 +74,16 @@ class QuestionModel {
 }
 
 class Option {
-  Option({
-    required this.id,
-    required this.text,
-  });
+  Option({required this.id, required this.text, this.isOpen = false});
+  final bool isOpen;
   final String id;
   final String text;
 }
 
 enum QuestionType {
   singleChoice,
+  singleChoiceOpen,
+  open,
 }
 
 class AnswerModel {
@@ -68,7 +103,13 @@ abstract class QuizApi {
 
   List<QuestionModel> getQuestions();
 
+  HubScreenConfiguration getHubScreenConfig();
+
   void sendAnswers(List<AnswerModel> answers);
 
   void quizStarted();
+
+  void hubButtonPressed(String id);
+
+  void newsItemPressed(String id);
 }

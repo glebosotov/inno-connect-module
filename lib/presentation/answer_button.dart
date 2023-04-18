@@ -38,13 +38,13 @@ class _AnswerButtonState extends State<AnswerButton> {
       },
       child: AnimatedContainer(
         alignment: Alignment.centerLeft,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
         decoration: BoxDecoration(
           color: (_isChosen
                   ? Theme.of(context).colorScheme.primaryContainer
                   : Theme.of(context).colorScheme.background)
               .withOpacity(0.6),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: (_isChosen
                     ? Theme.of(context).colorScheme.primary
@@ -57,6 +57,7 @@ class _AnswerButtonState extends State<AnswerButton> {
         child: Text(
           widget.option.text,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w500,
                 color: (_isChosen
                         ? Theme.of(context).colorScheme.primary
                         : Theme.of(context).colorScheme.onBackground)

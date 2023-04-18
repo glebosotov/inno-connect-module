@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 
 import 'pigeon.dart';
-import 'presentation/quiz_layout.dart';
+import 'presentation/presentation.dart';
 
 void main() => runApp(const MyApp());
 final QuizApi api = QuizApi();
@@ -36,7 +36,9 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   List<QuestionModel>? _questions;
-  late QuizConfiguration? _quizConfig;
+  QuizConfiguration? _quizConfig;
+  HubScreenConfiguration? _hubConfig;
+  bool _showingQuiz = false;
   Future<void> getQuestions() async {
     final QuizConfiguration config = await api.getQuizConfig();
     _quizConfig = config;
@@ -49,37 +51,51 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
+  Future<void> getHubConfig() async {
+    final HubScreenConfiguration config = await api.getHubScreenConfig();
+    setState(() {
+      _hubConfig = config;
+    });
+  }
+
   @override
   void initState() {
     getQuestions();
+    getHubConfig();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        child: _questions == null
-            ? const SizedBox.shrink()
-            : Theme(
-                data: Theme.of(context).copyWith(
-                  colorScheme: ColorScheme.fromSeed(
-                    seedColor: Color(
-                      int.parse(_quizConfig!.seedColor ?? '4CAF50', radix: 16) +
-                          0xFF000000,
+      body: Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Color(
+              int.parse(_quizConfig?.seedColor ?? '4CAF50', radix: 16) +
+                  0xFF000000,
+            ),
+          ),
+        ),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 400),
+          child: _questions == null || _hubConfig == null || _quizConfig == null
+              ? const CircularProgressIndicator()
+              : _showingQuiz
+                  ? QuizLayout(
+                      config: _quizConfig!,
+                      questions: _questions!,
+                      onDone: (List<AnswerModel> answers) {
+                        log(answers.toString());
+                        api.sendAnswers(answers);
+                        _showingQuiz = false;
+                      },
+                    )
+                  : HubLayout(
+                      config: _hubConfig!,
+                      openQuiz: () => setState(() => _showingQuiz = true),
                     ),
-                  ),
-                ),
-                child: QuizLayout(
-                  config: _quizConfig!,
-                  questions: _questions!,
-                  onDone: (List<AnswerModel> answers) {
-                    log(answers.toString());
-                    api.sendAnswers(answers);
-                  },
-                ),
-              ),
+        ),
       ),
     );
   }
