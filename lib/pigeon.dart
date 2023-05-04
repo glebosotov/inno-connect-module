@@ -74,16 +74,20 @@ class HubScreenConfiguration {
   HubScreenConfiguration({
     required this.news,
     required this.buttons,
+    this.deleteButtonConfig,
   });
 
   List<NewsItem?> news;
 
   List<HubButton?> buttons;
 
+  DeleteDataConfiguration? deleteButtonConfig;
+
   Object encode() {
     return <Object?>[
       news,
       buttons,
+      deleteButtonConfig?.encode(),
     ];
   }
 
@@ -92,6 +96,50 @@ class HubScreenConfiguration {
     return HubScreenConfiguration(
       news: (result[0] as List<Object?>?)!.cast<NewsItem?>(),
       buttons: (result[1] as List<Object?>?)!.cast<HubButton?>(),
+      deleteButtonConfig: result[2] != null
+          ? DeleteDataConfiguration.decode(result[2]! as List<Object?>)
+          : null,
+    );
+  }
+}
+
+class DeleteDataConfiguration {
+  DeleteDataConfiguration({
+    required this.title,
+    required this.confirmationTitle,
+    required this.confirmationMessage,
+    required this.confirmationButtonTitle,
+    required this.cancelButtonTitle,
+  });
+
+  String title;
+
+  String confirmationTitle;
+
+  String confirmationMessage;
+
+  String confirmationButtonTitle;
+
+  String cancelButtonTitle;
+
+  Object encode() {
+    return <Object?>[
+      title,
+      confirmationTitle,
+      confirmationMessage,
+      confirmationButtonTitle,
+      cancelButtonTitle,
+    ];
+  }
+
+  static DeleteDataConfiguration decode(Object result) {
+    result as List<Object?>;
+    return DeleteDataConfiguration(
+      title: result[0]! as String,
+      confirmationTitle: result[1]! as String,
+      confirmationMessage: result[2]! as String,
+      confirmationButtonTitle: result[3]! as String,
+      cancelButtonTitle: result[4]! as String,
     );
   }
 }
@@ -283,23 +331,26 @@ class _QuizApiCodec extends StandardMessageCodec {
     if (value is AnswerModel) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else if (value is HubButton) {
+    } else if (value is DeleteDataConfiguration) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    } else if (value is HubScreenConfiguration) {
+    } else if (value is HubButton) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    } else if (value is NewsItem) {
+    } else if (value is HubScreenConfiguration) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
-    } else if (value is Option) {
+    } else if (value is NewsItem) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
-    } else if (value is QuestionModel) {
+    } else if (value is Option) {
       buffer.putUint8(133);
       writeValue(buffer, value.encode());
-    } else if (value is QuizConfiguration) {
+    } else if (value is QuestionModel) {
       buffer.putUint8(134);
+      writeValue(buffer, value.encode());
+    } else if (value is QuizConfiguration) {
+      buffer.putUint8(135);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -312,16 +363,18 @@ class _QuizApiCodec extends StandardMessageCodec {
       case 128: 
         return AnswerModel.decode(readValue(buffer)!);
       case 129: 
-        return HubButton.decode(readValue(buffer)!);
+        return DeleteDataConfiguration.decode(readValue(buffer)!);
       case 130: 
-        return HubScreenConfiguration.decode(readValue(buffer)!);
+        return HubButton.decode(readValue(buffer)!);
       case 131: 
-        return NewsItem.decode(readValue(buffer)!);
+        return HubScreenConfiguration.decode(readValue(buffer)!);
       case 132: 
-        return Option.decode(readValue(buffer)!);
+        return NewsItem.decode(readValue(buffer)!);
       case 133: 
-        return QuestionModel.decode(readValue(buffer)!);
+        return Option.decode(readValue(buffer)!);
       case 134: 
+        return QuestionModel.decode(readValue(buffer)!);
+      case 135: 
         return QuizConfiguration.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -492,6 +545,28 @@ class QuizApi {
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_id]) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> deleteDataPressed() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.QuizApi.deleteDataPressed', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(null) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',

@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Connect',
       theme: ThemeData(
-        colorSchemeSeed: Colors.green,
+        colorSchemeSeed: Colors.blue,
         useMaterial3: true,
         platform: TargetPlatform.iOS,
       ),
@@ -71,10 +71,7 @@ class _MainPageState extends State<MainPage> {
       body: Theme(
         data: Theme.of(context).copyWith(
           colorScheme: ColorScheme.fromSeed(
-            seedColor: Color(
-              int.parse(_quizConfig?.seedColor ?? '4CAF50', radix: 16) +
-                  0xFF000000,
-            ),
+            seedColor: colorParse(_quizConfig),
           ),
         ),
         child: AnimatedSwitcher(
@@ -88,7 +85,7 @@ class _MainPageState extends State<MainPage> {
                       onDone: (List<AnswerModel> answers) {
                         log(answers.toString());
                         api.sendAnswers(answers);
-                        _showingQuiz = false;
+                        setState(() => _showingQuiz = false);
                       },
                     )
                   : HubLayout(
@@ -99,4 +96,10 @@ class _MainPageState extends State<MainPage> {
       ),
     );
   }
+}
+
+Color colorParse(QuizConfiguration? quizConfig) {
+  return Color(
+    int.parse(quizConfig?.seedColor ?? '4CAF50', radix: 16) + 0xFF000000,
+  );
 }

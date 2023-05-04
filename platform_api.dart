@@ -25,9 +25,26 @@ class HubScreenConfiguration {
   HubScreenConfiguration({
     required this.news,
     required this.buttons,
+    this.deleteButtonConfig,
   });
   final List<NewsItem?> news;
   final List<HubButton?> buttons;
+  DeleteDataConfiguration? deleteButtonConfig;
+}
+
+class DeleteDataConfiguration {
+  DeleteDataConfiguration({
+    required this.title,
+    required this.confirmationTitle,
+    required this.confirmationMessage,
+    required this.confirmationButtonTitle,
+    required this.cancelButtonTitle,
+  });
+  final String title;
+  final String confirmationTitle;
+  final String confirmationMessage;
+  final String confirmationButtonTitle;
+  final String cancelButtonTitle;
 }
 
 class HubButton {
@@ -112,4 +129,6 @@ abstract class QuizApi {
   void hubButtonPressed(String id);
 
   void newsItemPressed(String id);
+
+  void deleteDataPressed();
 }

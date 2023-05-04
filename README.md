@@ -4,7 +4,7 @@
 
 ### iOS (UIKit / SwiftUI)
 
-1. Add this repository as a submodule to your project
+1. Add this repository as a submodule to your project and run `flutter pub get inside`
 2. Update Podfile
     - Add this at the end
 
@@ -42,7 +42,7 @@
 
 ### Android (Kotlin / Java)
 
-1. Add this repository as a submodule to your project.
+1. Add this repository as a submodule to your project and run `flutter pub get inside`
 2. Add this to your `settings.gradle`
 
     ```groovy
@@ -148,6 +148,8 @@
         override fun hubButtonPressed(id: String) {}
 
         override fun newsItemPressed(id: String) {}
+
+        override fun deleteDataPressed() {}
     }
     ```
 
