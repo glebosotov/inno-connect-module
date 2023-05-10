@@ -26,10 +26,12 @@ class HubScreenConfiguration {
     required this.news,
     required this.buttons,
     this.deleteButtonConfig,
+    this.disableHub = false,
   });
   final List<NewsItem?> news;
   final List<HubButton?> buttons;
   DeleteDataConfiguration? deleteButtonConfig;
+  bool disableHub;
 }
 
 class DeleteDataConfiguration {

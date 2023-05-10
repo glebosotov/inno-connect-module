@@ -78,20 +78,29 @@ class _MainPageState extends State<MainPage> {
           duration: const Duration(milliseconds: 400),
           child: _questions == null || _hubConfig == null || _quizConfig == null
               ? const CircularProgressIndicator()
-              : _showingQuiz
+              : _hubConfig!.disableHub
                   ? QuizLayout(
                       config: _quizConfig!,
                       questions: _questions!,
                       onDone: (List<AnswerModel> answers) {
                         log(answers.toString());
                         api.sendAnswers(answers);
-                        setState(() => _showingQuiz = false);
                       },
                     )
-                  : HubLayout(
-                      config: _hubConfig!,
-                      openQuiz: () => setState(() => _showingQuiz = true),
-                    ),
+                  : _showingQuiz
+                      ? QuizLayout(
+                          config: _quizConfig!,
+                          questions: _questions!,
+                          onDone: (List<AnswerModel> answers) {
+                            log(answers.toString());
+                            api.sendAnswers(answers);
+                            setState(() => _showingQuiz = false);
+                          },
+                        )
+                      : HubLayout(
+                          config: _hubConfig!,
+                          openQuiz: () => setState(() => _showingQuiz = true),
+                        ),
         ),
       ),
     );

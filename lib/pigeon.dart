@@ -75,6 +75,7 @@ class HubScreenConfiguration {
     required this.news,
     required this.buttons,
     this.deleteButtonConfig,
+    required this.disableHub,
   });
 
   List<NewsItem?> news;
@@ -83,11 +84,14 @@ class HubScreenConfiguration {
 
   DeleteDataConfiguration? deleteButtonConfig;
 
+  bool disableHub;
+
   Object encode() {
     return <Object?>[
       news,
       buttons,
       deleteButtonConfig?.encode(),
+      disableHub,
     ];
   }
 
@@ -99,6 +103,7 @@ class HubScreenConfiguration {
       deleteButtonConfig: result[2] != null
           ? DeleteDataConfiguration.decode(result[2]! as List<Object?>)
           : null,
+      disableHub: result[3]! as bool,
     );
   }
 }

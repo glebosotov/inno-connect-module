@@ -98,7 +98,8 @@ data class QuizConfiguration (
 data class HubScreenConfiguration (
   val news: List<NewsItem?>,
   val buttons: List<HubButton?>,
-  val deleteButtonConfig: DeleteDataConfiguration? = null
+  val deleteButtonConfig: DeleteDataConfiguration? = null,
+  val disableHub: Boolean
 
 ) {
   companion object {
@@ -109,7 +110,8 @@ data class HubScreenConfiguration (
       val deleteButtonConfig: DeleteDataConfiguration? = (list[2] as List<Any?>?)?.let {
         DeleteDataConfiguration.fromList(it)
       }
-      return HubScreenConfiguration(news, buttons, deleteButtonConfig)
+      val disableHub = list[3] as Boolean
+      return HubScreenConfiguration(news, buttons, deleteButtonConfig, disableHub)
     }
   }
   fun toList(): List<Any?> {
@@ -117,6 +119,7 @@ data class HubScreenConfiguration (
       news,
       buttons,
       deleteButtonConfig?.toList(),
+      disableHub,
     )
   }
 }

@@ -91,6 +91,7 @@ struct HubScreenConfiguration {
   var news: [NewsItem?]
   var buttons: [HubButton?]
   var deleteButtonConfig: DeleteDataConfiguration? = nil
+  var disableHub: Bool
 
   static func fromList(_ list: [Any]) -> HubScreenConfiguration? {
     let news = list[0] as! [NewsItem?]
@@ -99,11 +100,13 @@ struct HubScreenConfiguration {
     if let deleteButtonConfigList = list[2] as! [Any]? {
       deleteButtonConfig = DeleteDataConfiguration.fromList(deleteButtonConfigList)
     }
+    let disableHub = list[3] as! Bool
 
     return HubScreenConfiguration(
       news: news,
       buttons: buttons,
-      deleteButtonConfig: deleteButtonConfig
+      deleteButtonConfig: deleteButtonConfig,
+      disableHub: disableHub
     )
   }
   func toList() -> [Any?] {
@@ -111,6 +114,7 @@ struct HubScreenConfiguration {
       news,
       buttons,
       deleteButtonConfig?.toList(),
+      disableHub,
     ]
   }
 }
