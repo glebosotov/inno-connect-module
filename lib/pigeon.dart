@@ -24,6 +24,7 @@ class QuizConfiguration {
     this.endDescription,
     required this.nextButtonTitle,
     this.seedColor,
+    this.skipButtonTitle,
     this.disableSkipButton,
   });
 
@@ -43,6 +44,8 @@ class QuizConfiguration {
 
   String? seedColor;
 
+  String? skipButtonTitle;
+
   bool? disableSkipButton;
 
   Object encode() {
@@ -55,6 +58,7 @@ class QuizConfiguration {
       endDescription,
       nextButtonTitle,
       seedColor,
+      skipButtonTitle,
       disableSkipButton,
     ];
   }
@@ -70,7 +74,8 @@ class QuizConfiguration {
       endDescription: result[5] as String?,
       nextButtonTitle: result[6]! as String,
       seedColor: result[7] as String?,
-      disableSkipButton: result[8] as bool?,
+      skipButtonTitle: result[8] as String?,
+      disableSkipButton: result[9] as bool?,
     );
   }
 }

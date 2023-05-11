@@ -64,6 +64,7 @@ data class QuizConfiguration (
   val endDescription: String? = null,
   val nextButtonTitle: String,
   val seedColor: String? = null,
+  val skipButtonTitle: String? = null,
   val disableSkipButton: Boolean? = null
 
 ) {
@@ -78,8 +79,9 @@ data class QuizConfiguration (
       val endDescription = list[5] as String?
       val nextButtonTitle = list[6] as String
       val seedColor = list[7] as String?
-      val disableSkipButton = list[8] as Boolean?
-      return QuizConfiguration(startImageUrl, endImageUrl, startTitle, startDescription, endTitle, endDescription, nextButtonTitle, seedColor, disableSkipButton)
+      val skipButtonTitle = list[8] as String?
+      val disableSkipButton = list[9] as Boolean?
+      return QuizConfiguration(startImageUrl, endImageUrl, startTitle, startDescription, endTitle, endDescription, nextButtonTitle, seedColor, skipButtonTitle, disableSkipButton)
     }
   }
   fun toList(): List<Any?> {
@@ -92,6 +94,7 @@ data class QuizConfiguration (
       endDescription,
       nextButtonTitle,
       seedColor,
+      skipButtonTitle,
       disableSkipButton,
     )
   }

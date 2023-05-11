@@ -11,6 +11,7 @@ class QuizConfiguration {
     this.nextButtonTitle,
     this.seedColor, {
     this.disableSkipButton = false,
+    this.skipButtonTitle,
   });
   final String? startImageUrl;
   final String? endImageUrl;
@@ -20,6 +21,7 @@ class QuizConfiguration {
   final String? endDescription;
   final String nextButtonTitle;
   final String? seedColor;
+  final String? skipButtonTitle;
   final bool? disableSkipButton;
 }
 

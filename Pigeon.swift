@@ -50,6 +50,7 @@ struct QuizConfiguration {
   var endDescription: String? = nil
   var nextButtonTitle: String
   var seedColor: String? = nil
+  var skipButtonTitle: String? = nil
   var disableSkipButton: Bool? = nil
 
   static func fromList(_ list: [Any]) -> QuizConfiguration? {
@@ -61,7 +62,8 @@ struct QuizConfiguration {
     let endDescription: String? = nilOrValue(list[5])
     let nextButtonTitle = list[6] as! String
     let seedColor: String? = nilOrValue(list[7])
-    let disableSkipButton: Bool? = nilOrValue(list[8])
+    let skipButtonTitle: String? = nilOrValue(list[8])
+    let disableSkipButton: Bool? = nilOrValue(list[9])
 
     return QuizConfiguration(
       startImageUrl: startImageUrl,
@@ -72,6 +74,7 @@ struct QuizConfiguration {
       endDescription: endDescription,
       nextButtonTitle: nextButtonTitle,
       seedColor: seedColor,
+      skipButtonTitle: skipButtonTitle,
       disableSkipButton: disableSkipButton
     )
   }
@@ -85,6 +88,7 @@ struct QuizConfiguration {
       endDescription,
       nextButtonTitle,
       seedColor,
+      skipButtonTitle,
       disableSkipButton,
     ]
   }
