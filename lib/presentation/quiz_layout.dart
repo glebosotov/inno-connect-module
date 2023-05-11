@@ -35,18 +35,6 @@ class _QuizLayoutState extends State<QuizLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: <Widget>[
-          if (!(widget.config.disableSkipButton ?? false))
-            TextButton(
-              onPressed: () => api.skipQuiz(),
-              child: Text(
-                widget.config.skipButtonTitle ?? 'Skip',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ),
-        ],
-      ),
       backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
         child: Padding(
@@ -134,25 +122,38 @@ class _QuizLayoutState extends State<QuizLayout> {
                 child: Row(
                   children: <Widget>[
                     Expanded(
-                      child: ElevatedButton(
-                        style: answerButtonStyle(context),
-                        onPressed: (_pageController.hasClients &&
-                                    _pageController.page == 0) ||
-                                _checkButtonState()
-                            ? () async {
-                                await _pageController.nextPage(
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.easeInOut,
-                                );
-                                // ignore: no-empty-block
-                                setState(() {});
-                              }
-                            : _pageController.hasClients &&
-                                    _pageController.page ==
-                                        widget.questions.length + 1
-                                ? () => widget.onDone(_answers)
-                                : null,
-                        child: Text(widget.config.nextButtonTitle),
+                      child: Column(
+                        children: <Widget>[
+                          ElevatedButton(
+                            style: answerButtonStyle(context),
+                            onPressed: (_pageController.hasClients &&
+                                        _pageController.page == 0) ||
+                                    _checkButtonState()
+                                ? () async {
+                                    await _pageController.nextPage(
+                                      duration:
+                                          const Duration(milliseconds: 300),
+                                      curve: Curves.easeInOut,
+                                    );
+                                    // ignore: no-empty-block
+                                    setState(() {});
+                                  }
+                                : _pageController.hasClients &&
+                                        _pageController.page ==
+                                            widget.questions.length + 1
+                                    ? () => widget.onDone(_answers)
+                                    : null,
+                            child: Text(widget.config.nextButtonTitle),
+                          ),
+                          if (!(widget.config.disableSkipButton ?? false))
+                            TextButton(
+                              onPressed: () => api.skipQuiz(),
+                              child: Text(
+                                widget.config.skipButtonTitle ?? 'Skip',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                   ],
