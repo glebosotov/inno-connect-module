@@ -145,7 +145,11 @@ class _QuizLayoutState extends State<QuizLayout> {
                                     : null,
                             child: Text(widget.config.nextButtonTitle),
                           ),
-                          if (!(widget.config.disableSkipButton ?? false))
+                          if (!(widget.config.disableSkipButton ?? false) &&
+                              _pageController.hasClients &&
+                              _pageController.page != 0 &&
+                              _pageController.page !=
+                                  widget.questions.length + 1)
                             TextButton(
                               onPressed: () => api.skipQuiz(),
                               child: Text(
@@ -217,7 +221,7 @@ class MetaLayout extends StatelessWidget {
         ),
         Text(
           description ?? '',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color:
                     Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
               ),
