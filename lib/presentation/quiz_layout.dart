@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -35,6 +36,15 @@ class _QuizLayoutState extends State<QuizLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        actions: <Widget>[
+          if (!(widget.config.disableSkipButton ?? false))
+            IconButton(
+              onPressed: () => api.skipQuiz(),
+              icon: const Icon(CupertinoIcons.forward_fill),
+            ),
+        ],
+      ),
       backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
         child: Padding(

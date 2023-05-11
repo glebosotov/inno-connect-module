@@ -103,7 +103,8 @@
                     endTitle = "Hello",
                     endDescription = "Hello",
                     nextButtonTitle = "Next",
-                    seedColor = "0379FB"
+                    seedColor = "0379FB",
+                    disableSkipButton = false
             )
         }
 
@@ -138,7 +139,7 @@
                     startsQuiz = true,
                     title = "start the quiz"
                 )
-            ))
+            ), disableHub = false)
         }
 
         override fun sendAnswers(answers: List<AnswerModel>) {}
@@ -150,6 +151,8 @@
         override fun newsItemPressed(id: String) {}
 
         override fun deleteDataPressed() {}
+
+        override fun skipQuiz() {}
     }
     ```
 

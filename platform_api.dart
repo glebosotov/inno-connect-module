@@ -9,8 +9,9 @@ class QuizConfiguration {
     this.endTitle,
     this.endDescription,
     this.nextButtonTitle,
-    this.seedColor,
-  );
+    this.seedColor, {
+    this.disableSkipButton = false,
+  });
   final String? startImageUrl;
   final String? endImageUrl;
   final String? startTitle;
@@ -19,6 +20,7 @@ class QuizConfiguration {
   final String? endDescription;
   final String nextButtonTitle;
   final String? seedColor;
+  final bool? disableSkipButton;
 }
 
 class HubScreenConfiguration {
@@ -133,4 +135,6 @@ abstract class QuizApi {
   void newsItemPressed(String id);
 
   void deleteDataPressed();
+
+  void skipQuiz();
 }
