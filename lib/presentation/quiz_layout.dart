@@ -146,9 +146,10 @@ class _QuizLayoutState extends State<QuizLayout> {
                             child: Text(widget.config.nextButtonTitle),
                           ),
                           if (!(widget.config.disableSkipButton ?? false) &&
-                              _pageController.hasClients &&
-                              _pageController.page !=
-                                  widget.questions.length + 1)
+                              ((_pageController.hasClients &&
+                                      _pageController.page !=
+                                          widget.questions.length + 1) ||
+                                  !_pageController.hasClients))
                             TextButton(
                               onPressed: () => api.skipQuiz(),
                               child: Text(
