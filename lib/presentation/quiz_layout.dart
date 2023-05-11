@@ -147,7 +147,6 @@ class _QuizLayoutState extends State<QuizLayout> {
                           ),
                           if (!(widget.config.disableSkipButton ?? false) &&
                               _pageController.hasClients &&
-                              _pageController.page != 0 &&
                               _pageController.page !=
                                   widget.questions.length + 1)
                             TextButton(
