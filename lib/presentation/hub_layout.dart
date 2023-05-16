@@ -125,57 +125,55 @@ class HubLayout extends StatelessWidget {
                 ),
               ),
             ),
-            Expanded(
-              child: Container(
-                height: 20,
-                alignment: Alignment.center,
-                child: SizedBox(
-                  height: 40,
-                  child: ListView.separated(
-                    separatorBuilder: (_, __) => const SizedBox(width: 8),
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: config.buttons.length,
-                    itemBuilder: (BuildContext context, int index) =>
-                        ElevatedButton(
-                      style: ButtonStyle(
-                        splashFactory: NoSplash.splashFactory,
-                        shape:
-                            MaterialStateProperty.resolveWith<OutlinedBorder>(
-                          (Set<MaterialState> states) {
-                            if (states.contains(MaterialState.disabled)) {
-                              return RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: BorderSide(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onPrimary
-                                      .withOpacity(0.5),
-                                ),
-                              );
-                            }
-
+            Container(
+              alignment: Alignment.bottomCenter,
+              child: LimitedBox(
+                maxHeight: 48,
+                child: ListView.separated(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: config.buttons.length,
+                  itemBuilder: (BuildContext context, int index) =>
+                      ElevatedButton(
+                    style: ButtonStyle(
+                      splashFactory: NoSplash.splashFactory,
+                      shape: MaterialStateProperty.resolveWith<OutlinedBorder>(
+                        (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.disabled)) {
                             return RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimary
+                                    .withOpacity(0.5),
+                              ),
                             );
-                          },
-                        ),
+                          }
+
+                          return RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          );
+                        },
                       ),
-                      onPressed: () {
-                        api.hubButtonPressed(
-                          config.buttons[index]?.id ?? 'invalid',
-                        );
-                        if (config.buttons[index]?.startsQuiz ?? false) {
-                          openQuiz();
-                        }
-                      },
-                      child: Text(
-                        config.buttons[index]?.title ?? '',
-                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                      ),
+                    ),
+                    onPressed: () {
+                      api.hubButtonPressed(
+                        config.buttons[index]?.id ?? 'invalid',
+                      );
+                      if (config.buttons[index]?.startsQuiz ?? false) {
+                        openQuiz();
+                      }
+                    },
+                    child: Text(
+                      config.buttons[index]?.title ?? '',
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                     ),
                   ),
                 ),
